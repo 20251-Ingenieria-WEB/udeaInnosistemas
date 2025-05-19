@@ -1,0 +1,42 @@
+name: Deploy to Vercel
+
+on:
+  push:
+    branches:
+      - main # O la rama que quieras desplegar a producción
+
+jobs:
+  deploy_production:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x' # Elige tu versión de Node
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # (Opcional) Ejecutar linters y tests aquí también
+      - name: Run Linters
+        run: npm run lint
+      - name: Run Tests
+        run: npm run test
+
+      # Desplegar a Vercel Producción
+      - name: Deploy to Vercel Production
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        # Primero, 'pull' para asegurarse de que la CLI tenga la configuración más reciente del proyecto Vercel.
+        # Luego, 'build' para generar los artefactos de producción.
+        # Finalmente, 'deploy --prebuilt --prod' para desplegar los artefactos ya construidos a producción.
+        run: |
+          npx vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+          npx vercel build --prod --token=$VERCEL_TOKEN
+          npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
