@@ -2,7 +2,7 @@
 export default function Home() {
   return (
     <div>    
-      <p>hola mundo desde innosistemas!</p>
+      <h1>hola mundo desde innosistemas</h1>
     </div>
   );
 }
