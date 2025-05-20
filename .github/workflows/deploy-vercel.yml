@@ -20,9 +20,9 @@ jobs:
         with:
           node-version: 22.x
       - name: Install Dependencies
-        run: yarn install
+        run: npm install
       - name: Build
-        run: yarn build
+        run: npm run build
 
   Deploy:
     needs: Build
@@ -35,7 +35,7 @@ jobs:
       with:
         node-version: 22.x
     - name: Install vercel CLI
-      run: yarn global add vercel
+      run: npm install -g vercel
     - name: pull Vercel Environment Variables
       run: vercel pull --yes --token=${{ secrets.VERCEL_TOKEN }}
     - name: Deploy to Vercel
