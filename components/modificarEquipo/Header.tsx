@@ -1,8 +1,9 @@
 import React from "react";
 
-interface HeaderProps {}
+//interface HeaderProps {}
 
-export const Header: React.FC<HeaderProps> = () => {
+export const Header = () => {
+//export const Header: React.FC<HeaderProps> = () => {
   return (
     <header className="absolute top-0 left-0 h-[88px] w-[1512px] max-md:p-2.5 max-md:w-full max-md:h-auto max-sm:p-1.5">
       <div className="absolute top-0 left-0 bg-white border border-solid border-slate-600 border-opacity-60 h-[87px] w-[1512px] max-md:w-full max-md:h-auto" />

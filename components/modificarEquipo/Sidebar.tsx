@@ -1,8 +1,8 @@
 import React from "react";
 
-interface SidebarProps {}
-
-export const Sidebar: React.FC<SidebarProps> = () => {
+//interface SidebarProps {}
+//export const Sidebar: React.FC<SidebarProps> = () => {
+export const Sidebar = () => {
   return (
     <nav className="absolute -left-px h-[895px] top-[87px] w-[322px] max-md:flex max-md:overflow-x-auto max-md:relative max-md:top-0 max-md:left-0 max-md:flex-row max-md:w-full max-md:h-auto max-sm:flex-col max-sm:h-auto">
       <div className="absolute top-0 left-0 border border-solid bg-slate-600 bg-opacity-80 border-slate-600 border-opacity-20 h-[895px] w-[322px] max-md:w-full max-md:h-20" />

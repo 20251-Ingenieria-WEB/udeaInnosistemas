@@ -1,8 +1,8 @@
 import * as React from "react";
 
-interface HeaderProps {}
+//interface HeaderProps {}
 
-export function Header({}: HeaderProps) {
+export function Header() {
   return (
     <header className="flex flex-wrap gap-5 justify-between px-8 py-3.5 w-full bg-white border border-solid border-slate-600 border-opacity-60 max-md:px-5 max-md:max-w-full">
       <div className="flex gap-3 my-auto text-slate-600 max-md:max-w-full">

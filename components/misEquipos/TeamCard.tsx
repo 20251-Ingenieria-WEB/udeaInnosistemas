@@ -1,8 +1,8 @@
 import * as React from "react";
 
-interface TeamCardProps {}
+//interface TeamCardProps {}
 
-export function TeamCard({}: TeamCardProps) {
+export function TeamCard() {
   return (
     <article className="flex flex-wrap gap-10 px-6 py-7 mt-9 w-full rounded-md border border-solid border-slate-600 max-md:px-5 max-md:max-w-full">
       <div className="flex-auto max-md:max-w-full">

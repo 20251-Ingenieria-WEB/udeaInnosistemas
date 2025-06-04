@@ -1,9 +1,9 @@
 import * as React from "react";
 import { TeamCard } from "./TeamCard";
 
-interface MyTeamsPageProps {}
+//interface MyTeamsPageProps {}
 
-export function MyTeamsPage({}: MyTeamsPageProps) {
+export function MyTeamsPage() {
   return (
     <main className="ml-5 w-[77%] max-md:ml-0 max-md:w-full">
       <section className="mt-10 w-full max-md:mt-10 max-md:max-w-full">

@@ -1,8 +1,8 @@
 import * as React from "react";
 
-interface SidebarProps {}
+//interface SidebarProps {}
 
-export function Sidebar({}: SidebarProps) {
+export function Sidebar() {
   return (
     <aside className="w-[23%] max-md:ml-0 max-md:w-full">
       <nav className="flex flex-col items-start pt-4 pr-16 pl-7 mx-auto w-full text-2xl text-white border border-solid bg-slate-600 bg-opacity-80 border-slate-600 border-opacity-20 pb-[624px] max-md:px-5 max-md:pb-24 max-md:mt-10">
