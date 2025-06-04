@@ -14,7 +14,7 @@ export const TeamMemberRow: React.FC<TeamMemberRowProps> = ({
   role,
   showDelete = false,
   onDelete,
-  onRoleChange,
+  //onRoleChange,
 }) => {
   return (
     <div className="absolute left-0 h-[49px] w-[620px] max-md:box-border max-md:p-2.5 max-md:w-full max-md:h-auto">

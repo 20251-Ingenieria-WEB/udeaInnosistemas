@@ -8,9 +8,10 @@ interface TeamMember {
   role: string;
 }
 
-interface TeamFormProps {}
+//interface TeamFormProps {}
 
-export const TeamForm: React.FC<TeamFormProps> = () => {
+//export const TeamForm: React.FC<TeamFormProps> = () => {
+export const TeamForm = () => { 
   const [teamName, setTeamName] = useState("Nombre del equipo");
   const [newMemberName, setNewMemberName] = useState("");
   const [members, setMembers] = useState<TeamMember[]>([
