@@ -1,8 +1,8 @@
 "use client";
 import * as React from "react";
-import { Header } from "../components/inicial/Header";
-import { ActionButtons } from "../components/inicial/ActionButtons";
-import { Footer } from "../components/inicial/Footer";
+import { Header } from "./Header";
+import { ActionButtons } from "./ActionButtons";
+import { Footer } from "./Footer";
 
 export default function HomeDesktop() {
   return (
