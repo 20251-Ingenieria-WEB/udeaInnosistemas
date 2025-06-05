@@ -1,30 +1,43 @@
+// components/dashboard/DashboardHeader.jsx
+"use client";
 import * as React from "react";
 import { SearchInput } from "./SearchInput";
 import { UserAvatar } from "./UserAvatar";
 
 export function DashboardHeader() {
   return (
-    <header className="absolute top-0 left-0 h-[88px] w-[1512px] max-md:w-full max-sm:w-full max-sm:h-[70px]">
-      <div className="absolute top-0 left-0 bg-white border border-solid border-slate-600 border-opacity-60 h-[87px] w-[1512px] max-md:w-full max-sm:w-full max-sm:h-[70px]" />
+    <header className="relative h-[88px] w-full bg-white border-b border-solid border-slate-600 border-opacity-60 max-sm:h-[70px]">
+      <div className="flex items-center justify-between h-full px-4 sm:px-6 md:px-8">
+        {/* Lado Izquierdo: InnoSistemas y > Dashboard */}
+        <div className="flex items-center gap-2 md:gap-4 flex-shrink-0"> {/* Añadido flex-shrink-0 */}
+          <h1 className="text-4xl font-extrabold text-slate-600 max-md:text-3xl max-sm:text-xl">
+            InnoSistemas
+          </h1>
+          <nav className="text-3xl text-slate-600 max-md:text-2xl max-sm:text-lg">
+            &gt; Dashboard
+          </nav>
+        </div>
 
-      <h1 className="absolute top-px text-4xl font-extrabold h-[87px] left-[31px] text-slate-600 w-[255px] max-md:text-3xl max-md:w-[200px] max-sm:left-2.5 max-sm:text-xl max-sm:h-[60px] max-sm:top-[5px] max-sm:w-[150px]">
-        InnoSistemas
-      </h1>
+        {/* Lado Derecho: UdeA, SearchInput, UserAvatar */}
+        {/* Usamos flex-grow para que ocupe el espacio restante, y ajustamos el gap */}
+        <div className="flex items-center gap-2 max-sm:gap-1 flex-grow justify-end min-w-0"> {/* Ajustes clave aquí */}
+          {/* UdeA: Puede necesitar un tamaño de texto aún más pequeño en pantallas muy pequeñas */}
+          <div className="text-3xl font-bold text-center text-emerald-800 max-md:text-2xl max-sm:text-base hidden sm:block"> {/* Ocultar UdeA en pantallas muy pequeñas? */}
+            UdeA
+          </div>
 
-      <nav className="absolute h-9 text-3xl left-[289px] text-slate-600 top-[27px] w-[183px] max-md:text-2xl max-md:left-[250px]">
-        &gt; Dashboard
-      </nav>
+          {/* SearchInput: Ocultar en sm y mostrar en md. */}
+          {/* Si `SearchInput` tiene un `min-width` interno, necesitamos anularlo o que sea responsivo. */}
+          {/* Agregamos `flex-grow` para que ocupe el espacio disponible pero permitimos que se encoja (`min-w-0`) */}
+          <SearchInput className="hidden sm:block flex-grow max-w-[250px]" /> {/* max-w para limitar crecimiento */}
 
-      <div className="absolute text-3xl font-bold text-center text-emerald-800 h-[58px] left-[921px] top-[13px] w-[109px] max-md:text-2xl max-md:left-[70%] max-sm:top-5 max-sm:left-2/4 max-sm:text-lg max-sm:-translate-x-2/4">
-        UdeA
+          {/* UserAvatar: Reducir su tamaño en pantallas pequeñas */}
+          <UserAvatar
+            initials="JP"
+            className="flex-shrink-0 max-sm:h-[40px] max-sm:w-[40px]"
+          />
+        </div>
       </div>
-
-      <SearchInput className="absolute h-[60px] left-[1063px] top-[13px] w-[321px] max-md:left-[60%] max-md:w-[250px] max-sm:hidden" />
-
-      <UserAvatar
-        initials="JP"
-        className="absolute h-[60px] left-[1417px] top-[13px] w-[60px] max-md:left-[85%] max-sm:top-2.5 max-sm:right-2.5 max-sm:left-auto max-sm:h-[50px] max-sm:w-[50px]"
-      />
     </header>
   );
 }

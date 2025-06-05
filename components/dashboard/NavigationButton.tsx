@@ -18,19 +18,27 @@ export function NavigationButton({
   return (
     <button
       onClick={onClick}
-      className={`flex relative items-center cursor-pointer w-[321px] max-md:w-[279px] max-sm:relative max-sm:top-auto max-sm:w-full max-sm:h-[60px] ${className}`}
+      // El botón en sí debe ser un contenedor flex para sus propios elementos internos
+      // Eliminamos 'relative' aquí ya que no es necesario para el botón en sí mismo
+      // y 'w-[321px]' y 'left-px' (si se pasara) deberían ser manejados por el padre
+      className={`flex items-center h-[60px] cursor-pointer
+                  ${isActive ? "bg-slate-600 bg-opacity-70" : "hover:bg-slate-700 hover:bg-opacity-50"} 
+                  ${className}`}
     >
-      <div
-        className={`absolute top-0 left-0 h-full w-[321px] max-md:w-[279px] max-sm:w-full max-sm:h-[60px] ${
-          isActive ? "bg-slate-600 bg-opacity-70" : ""
-        }`}
-      />
+      {/* Ya no necesitamos un div de fondo absoluto dentro del botón si el botón tiene su propio fondo */}
+      {/* Si NavigationButton necesita un fondo que ocupe todo su espacio, lo aplicamos directamente al <button> */}
+      {/* Si el "left-px" se necesita para alinear el botón completo DENTRO del sidebar, ese className debería estar en el <NavigationButton> en DashboardSidebar */}
+
       <img
         src={icon}
         alt=""
-        className="absolute top-2/4 w-10 h-10 -translate-y-2/4 left-[29px] max-sm:left-5 max-sm:h-[30px] max-sm:w-[30px]"
+        // Posicionamos el icono usando flexbox, no absolute
+        className="w-10 h-10 ml-[29px] mr-4 max-sm:ml-5 max-sm:h-[30px] max-sm:w-[30px]" // Añadimos margen izquierdo y derecho
       />
-      <span className="absolute top-2/4 text-2xl text-white -translate-y-2/4 left-[89px] max-sm:text-lg max-sm:left-[60px]">
+      <span
+        // Posicionamos el texto usando flexbox, no absolute
+        className="text-2xl text-white max-sm:text-lg"
+      >
         {label}
       </span>
     </button>
