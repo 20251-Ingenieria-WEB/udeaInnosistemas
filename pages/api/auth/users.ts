@@ -55,10 +55,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(200).json(userWithoutPassword);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error en la API de login:", error);
       return res.status(500).json({
-        error: error.message || "Error interno del servidor al intentar iniciar sesión."
+        //error: error.message || "Error interno del servidor al intentar iniciar sesión."
+        error: typeof error === 'string' ? error : (error as Error).message || "Error interno del servidor al intentar iniciar sesión."
+        
+        
       });
     }
   } else {
