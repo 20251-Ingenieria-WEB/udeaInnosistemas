@@ -54,6 +54,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const { contrasena: _, ...userWithoutPassword } = userData; // _, Excluye la contraseña del objeto de respuesta
       return res.status(200).json(userWithoutPassword);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error: any) {
       console.error("Error en la API de login:", error);
       return res.status(500).json({

@@ -41,6 +41,7 @@ export default async function handler(req, res) {
       }
 
       // Si las credenciales son correctas, puedes devolver información del usuario (sin la contraseña hasheada)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { contrasena: _, ...userWithoutPassword } = userData; // Excluir la contraseña del objeto de respuesta
 
       return res.status(200).json(userWithoutPassword); // 200 OK para éxito
