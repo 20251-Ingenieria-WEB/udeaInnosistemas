@@ -1,13 +1,17 @@
-// components/login/LoginButton.js
+// components/login/LoginButton.tsx
 "use client";
 import * as React from "react";
+import { LoginButtonProps } from '@/types/component-props'; // Importa la interfaz
 
-export function LoginButton() {
+// Aplica la interfaz a las props del componente
+export function LoginButton({ type = "button", disabled = false, children, className = "" }: LoginButtonProps) {
   return (
-    // Eliminar el div contenedor absoluto.
-    // El botón debe ocupar el ancho completo y tener margen superior.
-    <button className="w-full h-16 sm:h-20 text-3xl sm:text-4xl text-center text-white rounded-md cursor-pointer bg-slate-400 border-none mt-8">
-      Iniciar sesión
+    <button
+      type={type}
+      disabled={disabled}
+      className={`bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-md w-full text-xl sm:text-2xl mt-8 transition duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+    >
+      {children}
     </button>
   );
 }

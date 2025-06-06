@@ -1,21 +1,22 @@
-// components/login/PasswordInput.js (Revisa tu versión)
+// components/login/PasswordInput.tsx
 "use client";
 import * as React from "react";
+import { InputProps } from '@/types/component-props'; // Importa la interfaz
 
-export function PasswordInput() {
+// Aplica la interfaz directamente a las props del componente
+export function PasswordInput({ value, onChange, placeholder = "Contraseña", className = "" }: InputProps) {
   return (
-    // Contenedor principal para el campo de contraseña.
-    // Usamos flex-col para apilar label e input.
-    // mb-6 para dar espacio debajo de este componente.
-    <div className="flex flex-col w-full mb-6"> {/* <--- Míra este mb-6 */}
-      <label className="text-xl sm:text-2xl font-bold text-black mb-2"> {/* <--- Míra este mb-2 */}
+    <div className={`flex flex-col w-full mb-6 ${className}`}>
+      <label htmlFor="password" className="text-xl sm:text-2xl font-bold text-black mb-2">
         Contraseña
       </label>
       <div className="relative bg-white rounded-md border border-solid border-stone-300 w-full h-12 sm:h-14">
         <input
           type="password"
-          placeholder="Contraseña" // Asegúrate que sea el placeholder correcto para la contraseña
-          className="px-3 py-2 text-xl sm:text-2xl text-black border-none w-full h-full"
+          placeholder={placeholder}
+          value={value}
+          onChange={onChange}
+          className="px-3 py-2 text-xl sm:text-2xl text-black border-none w-full h-full focus:outline-none focus:shadow-outline"
         />
       </div>
     </div>

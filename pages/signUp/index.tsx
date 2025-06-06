@@ -1,10 +1,8 @@
-"use client";
-import React from "react";
+import { SignUpForm } from '@/components/auth/SignUpForm';
 import { CompanyHeader } from "../../components/signUp/CompanyHeader";
-import { SignUpForm } from "../../components/signUp/SignUpForm";
+//import Head from 'next/head';
 
-
-function SignUpFormDesktop() {
+export default function Registro() {
   return (
     <main className="overflow-hidden pt-2.5 pr-20 bg-white max-md:pr-5">
       <div className="flex gap-5 max-md:flex-col">
@@ -26,5 +24,3 @@ function SignUpFormDesktop() {
     </main>
   );
 }
-
-export default SignUpFormDesktop;

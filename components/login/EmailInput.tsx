@@ -1,21 +1,22 @@
-// components/login/EmailInput.js (Ejemplo, si no lo tienes, créalo así)
+// components/login/EmailInput.tsx
 "use client";
 import * as React from "react";
+import { InputProps } from '@/types/component-props'; // Importa la interfaz
 
-export function EmailInput() {
+// Aplica la interfaz directamente a las props del componente
+export function EmailInput({ value, onChange, placeholder = "@udea.edu.co", className = "" }: InputProps) {
   return (
-    // Contenedor principal para el campo de email.
-    // Usamos flex-col para apilar label e input.
-    // mb-6 para dar espacio debajo de este componente.
-    <div className="flex flex-col w-full mb-6"> {/* <--- Míra este mb-6 */}
-      <label className="text-xl sm:text-2xl font-bold text-black mb-2"> {/* <--- Míra este mb-2 */}
+    <div className={`flex flex-col w-full mb-6 ${className}`}>
+      <label htmlFor="email" className="text-xl sm:text-2xl font-bold text-black mb-2">
         Correo electrónico
       </label>
       <div className="relative bg-white rounded-md border border-solid border-stone-300 w-full h-12 sm:h-14">
         <input
-          type="email" // Asegúrate de que el tipo sea 'email'
-          placeholder="@udea.edu.co" // El placeholder que quieres
-          className="px-3 py-2 text-xl sm:text-2xl text-black border-none w-full h-full"
+          type="email"
+          placeholder={placeholder}
+          value={value}
+          onChange={onChange}
+          className="px-3 py-2 text-xl sm:text-2xl text-black border-none w-full h-full focus:outline-none focus:shadow-outline"
         />
       </div>
     </div>

@@ -15,6 +15,7 @@ export function DashboardSidebar() {
         <NavigationButton
           icon="https://cdn.builder.io/api/v1/image/assets/TEMP/3411d3d76e3b6e4a787ba27b22c12e5d8e9537fa?placeholderIfAbsent=true"
           label="Dashboard"
+          href="/dashboard" // ¡Aquí es donde pasas la ruta!
           isActive={true}
           // Quita el 'left-px' aquí si quieres que los botones se centren horizontalmente en su nuevo contenedor flex
           // Si NavigationButton tiene estilos internos de posicionamiento absoluto/relativo,
@@ -26,20 +27,32 @@ export function DashboardSidebar() {
         <NavigationButton
           icon="https://cdn.builder.io/api/v1/image/assets/TEMP/2d5003d78af4e51d485b6665874e2ea24bd871ae?placeholderIfAbsent=true"
           label="Crear equipo"
+          href="/crearEquipo" // ¡Aquí es donde pasas la ruta!
           className="" // Removed left-px
         />
 
         <NavigationButton
           icon="https://cdn.builder.io/api/v1/image/assets/TEMP/a1e45798d5f78408434a975f8c7bf8fe47a4769a?placeholderIfAbsent=true"
           label="Unirse a equipo"
+          href="/modificarEquipo" // ¡Aquí es donde pasas la ruta!
           className="" // Removed left-px
         />
 
         <NavigationButton
           icon="https://cdn.builder.io/api/v1/image/assets/TEMP/3b02c5f828baf2809a23f1a823f3babbe6201891?placeholderIfAbsent=true"
           label="Mis equipos"
+          href="/misEquipos" // ¡Aquí es donde pasas la ruta!
+          className="" // Removed left-px
+        />        
+
+        <NavigationButton
+          icon="salir.png"
+          label="salir"
+          href="/login" // ¡Aquí es donde pasas la ruta!
+          // isActive={router.pathname === '/dashboard'} // Puedes usar esto con useRouter para activar el estado
           className="" // Removed left-px
         />
+
       </div>
     </nav>
   );
