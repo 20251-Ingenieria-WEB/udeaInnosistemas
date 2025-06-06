@@ -1,3 +1,4 @@
+// TeamForm.jsx
 "use client";
 import React, { useState } from "react";
 import { TeamMemberRow } from "./TeamMemberRow";
@@ -8,10 +9,7 @@ interface TeamMember {
   role: string;
 }
 
-//interface TeamFormProps {}
-
-//export const TeamForm: React.FC<TeamFormProps> = () => {
-export const TeamForm = () => { 
+export const TeamForm = () => {
   const [teamName, setTeamName] = useState("Nombre del equipo");
   const [newMemberName, setNewMemberName] = useState("");
   const [members, setMembers] = useState<TeamMember[]>([
@@ -45,88 +43,73 @@ export const TeamForm = () => {
   };
 
   return (
-    <form className="absolute left-0 h-[545px] top-[136px] w-[1005px] max-md:w-full">
-      <div className="absolute top-0 left-0 h-[103px] w-[1005px] max-md:w-full">
-        <label className="absolute top-0 left-0 text-3xl font-bold text-black h-[34px] w-[259px] max-sm:text-2xl">
+    <form className="flex flex-col space-y-8 w-full max-w-[1005px] mx-auto p-4 md:p-0">
+      <div>
+        <label className="block text-xl font-bold text-black mb-2 md:text-3xl max-sm:text-2xl">
           Nombre del equipo
         </label>
-        <div className="absolute left-0 h-[58px] top-[45px] w-[1005px] max-md:w-full">
-          <div className="absolute top-0 left-0 rounded-md border border-solid border-stone-300 h-[58px] w-[1005px] max-md:w-full" />
+        <div className="relative">
           <input
             type="text"
             value={teamName}
             onChange={(e) => setTeamName(e.target.value)}
-            className="absolute top-3 left-4 text-3xl text-black h-[34px] w-[252px] max-sm:text-2xl bg-transparent border-none outline-none"
+            className="w-full h-[58px] px-4 text-xl text-black border border-solid border-stone-300 rounded-md outline-none md:text-3xl max-sm:text-2xl"
           />
         </div>
       </div>
 
-      <section className="absolute left-0 h-[214px] top-[139px] w-[620px] max-md:w-full">
-        <h3 className="absolute top-0 left-0 text-3xl font-bold text-black h-[34px] w-[137px] max-sm:text-2xl">
+      <section>
+        <h3 className="block text-xl font-bold text-black mb-4 md:text-3xl max-sm:text-2xl">
           Miembros
         </h3>
-        <div className="absolute left-0 h-[169px] top-[45px] w-[620px] max-md:w-full">
+        <div className="flex flex-col space-y-3">
           {members.map((member, index) => (
-            <div
+            <TeamMemberRow
               key={member.id}
-              style={{ top: `${index * 60}px` }}
-              className="absolute"
-            >
-              <TeamMemberRow
-                name={member.name}
-                role={member.role}
-                showDelete={index > 0}
-                onDelete={() => handleDeleteMember(member.id)}
-              />
-            </div>
+              name={member.name}
+              role={member.role}
+              showDelete={index > 0}
+              onDelete={() => handleDeleteMember(member.id)}
+            />
           ))}
         </div>
       </section>
 
-      <div className="absolute left-0 h-[58px] top-[389px] w-[1005px] max-md:w-full max-md:h-auto">
-        <div className="absolute top-0 left-0 h-[58px] w-[872px] max-md:mb-2.5 max-md:w-full">
-          <div className="absolute top-0 left-0 rounded-md border border-solid border-stone-300 h-[58px] w-[872px] max-md:w-full" />
+      <div className="flex flex-col md:flex-row md:items-end space-y-4 md:space-y-0 md:space-x-4">
+        <div className="flex-grow relative">
           <input
             type="text"
             placeholder="Añadir miembro..."
             value={newMemberName}
             onChange={(e) => setNewMemberName(e.target.value)}
-            className="absolute top-3 left-4 text-3xl h-[34px] text-black text-opacity-30 w-[233px] max-sm:text-2xl bg-transparent border-none outline-none"
+            className="w-full h-[58px] px-4 text-xl text-black text-opacity-30 border border-solid border-stone-300 rounded-md outline-none md:text-3xl max-sm:text-2xl"
           />
         </div>
         <button
           type="button"
           onClick={handleAddMember}
-          className="absolute top-0 h-[58px] left-[884px] w-[121px] max-md:relative max-md:top-0 max-md:left-0 max-md:w-[100px]"
+          className="bg-transparent border border-solid border-slate-400 rounded h-[58px] px-6 text-xl font-medium text-black text-opacity-50 md:w-[121px] max-sm:text-xl"
         >
-          <div className="absolute top-0 left-0 rounded border border-solid border-slate-400 h-[58px] w-[121px]" />
-          <span className="absolute left-0 top-1.5 text-2xl font-medium text-center h-[46px] text-black text-opacity-50 w-[121px] max-sm:text-xl">
-            Añadir
-          </span>
+          Añadir
         </button>
       </div>
 
-      <button
-        type="button"
-        onClick={handleSave}
-        className="absolute left-0 h-[62px] top-[483px] w-[268px] max-md:inline-block max-md:relative max-md:left-0 max-md:top-5 max-md:w-[48%] max-sm:left-0 max-sm:mb-2.5 max-sm:w-full"
-      >
-        <div className="absolute top-0 left-0 rounded-md bg-slate-400 bg-opacity-70 h-[62px] w-[268px]" />
-        <span className="absolute left-0 top-3.5 text-3xl font-medium text-center text-white h-[34px] w-[266px] max-sm:text-2xl">
+      <div className="flex flex-col space-y-4 md:flex-row md:space-x-4 md:space-y-0 mt-8">
+        <button
+          type="button"
+          onClick={handleSave}
+          className="bg-slate-400 bg-opacity-70 rounded-md h-[62px] px-6 text-xl font-medium text-white md:w-[268px] max-sm:text-2xl"
+        >
           Guardar cambios
-        </span>
-      </button>
-
-      <button
-        type="button"
-        onClick={handleCancel}
-        className="absolute h-[62px] left-[302px] top-[483px] w-[172px] max-md:inline-block max-md:relative max-md:top-5 max-md:left-[4%] max-md:w-[48%] max-sm:left-0 max-sm:mb-2.5 max-sm:w-full"
-      >
-        <div className="absolute top-0 left-0 rounded-md border border-solid border-slate-400 h-[62px] w-[172px]" />
-        <span className="absolute left-0 top-3.5 text-3xl font-medium text-center text-black h-[34px] w-[171px] max-sm:text-2xl">
+        </button>
+        <button
+          type="button"
+          onClick={handleCancel}
+          className="bg-transparent border border-solid border-slate-400 rounded-md h-[62px] px-6 text-xl font-medium text-black md:w-[172px] max-sm:text-2xl"
+        >
           Cancelar
-        </span>
-      </button>
+        </button>
+      </div>
     </form>
   );
 };

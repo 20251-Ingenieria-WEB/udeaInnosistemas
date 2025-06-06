@@ -9,14 +9,7 @@ export function DashboardHeader() {
     <header className="relative h-[88px] w-full bg-white border-b border-solid border-slate-600 border-opacity-60 max-sm:h-[70px]">
       <div className="flex items-center justify-between h-full px-4 sm:px-6 md:px-8">
         {/* Lado Izquierdo: InnoSistemas y > Dashboard */}
-        <div className="flex items-center gap-2 md:gap-4 flex-shrink-0"> {/* Añadido flex-shrink-0 */}
-          <h1 className="text-4xl font-extrabold text-slate-600 max-md:text-3xl max-sm:text-xl">
-            InnoSistemas
-          </h1>
-          <nav className="text-3xl text-slate-600 max-md:text-2xl max-sm:text-lg">
-            &gt; Dashboard
-          </nav>
-        </div>
+       
 
         {/* Lado Derecho: UdeA, SearchInput, UserAvatar */}
         {/* Usamos flex-grow para que ocupe el espacio restante, y ajustamos el gap */}

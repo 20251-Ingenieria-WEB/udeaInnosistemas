@@ -1,8 +1,8 @@
 // Tu archivo principal (por ejemplo, app/dashboard/page.jsx o pages/dashboard.jsx)
 "use client";
 import * as React from "react";
-import { DashboardHeader } from "../../components/dashboard/DashboardHeader";
-import { DashboardSidebar } from "../../components/dashboard/DashboardSidebar";
+import { Header } from "../../components/head/Header";
+import { DashboardSidebar } from "../../components/sidebar/DashboardSidebar";
 
 function DashboardDesktop() {
   return (
@@ -11,7 +11,7 @@ function DashboardDesktop() {
     // `w-full` lo hace ocupar el 100% del ancho disponible.
     // `overflow-hidden` es una medida de seguridad para evitar scroll horizontal si algo se desborda mínimamente.
     <main className="relative bg-white min-h-screen w-full overflow-hidden">
-      <DashboardHeader />
+      <Header />
       <DashboardSidebar />
     </main>
   );
