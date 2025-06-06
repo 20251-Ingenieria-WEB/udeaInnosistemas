@@ -9,6 +9,9 @@ import { EmailInput } from "../../components/login/EmailInput";
 import { PasswordInput } from "../../components/login/PasswordInput";
 import { LoginButton } from "../../components/login/LoginButton";
 import { RegistrationPrompt } from "../../components/login/RegistrationPrompt";
+import { ApiResponse, AuthErrorResponse  } from '../../types/api';
+
+
 
 function LoginFormDesktop() {
   const [email, setEmail] = React.useState<string>('');
@@ -27,6 +30,7 @@ function LoginFormDesktop() {
       // El endpoint de la API es /api/auth/users
       const apiUrl = `/api/auth/users?email=${encodeURIComponent(email)}&contrasena=${encodeURIComponent(contrasena)}`;
 
+      
       // Realiza la petición GET a la API
       const response = await fetch(apiUrl, {
         method: 'GET',
@@ -36,19 +40,27 @@ function LoginFormDesktop() {
       });
 
       // Parsea la respuesta como JSON
-      const data: { error?: string, [key: string]: any } = await response.json();
+      //const data: { error?: string, [key: string]: any } = await response.json();
 
+      const data: ApiResponse = await response.json();
       // Verifica si la respuesta no fue exitosa (códigos de estado 4xx o 5xx)
       if (!response.ok) {
         // Establece el mensaje de error de la API o un mensaje genérico
-        setError(data.error || 'Error al iniciar sesión. Inténtalo de nuevo.');
-        console.error("Error response data:", data); // Log del error para depuración
+        //setError(data.error || 'Error al iniciar sesión. Inténtalo de nuevo.');
+        //console.error("Error response data:", data); // Log del error para depuración
+        setError((data as AuthErrorResponse).error || 'Error al iniciar sesión. Inténtalo de nuevo.');
+        console.error("Error response data:", data);
         return; // Detiene la ejecución
       }
 
-      // Si la respuesta fue exitosa
+    
+       // Si la respuesta fue exitosa, 'data' será de tipo AuthSuccessResponse
       console.log('Inicio de sesión exitoso:', data);
-      router.push('/dashboard'); // Redirige al usuario al dashboard
+      // Puedes acceder a propiedades como (data as AuthSuccessResponse).token
+      // o (data as AuthSuccessResponse).id si existen.
+      router.push('/dashboard');
+
+
 
     } catch (err) {
       // Captura y maneja errores de red o errores al procesar la respuesta

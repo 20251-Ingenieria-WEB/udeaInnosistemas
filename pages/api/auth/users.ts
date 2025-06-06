@@ -50,7 +50,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       // Si las credenciales son correctas, devuelve la información del usuario (sin el hash de la contraseña)
-      const { contrasena: _, ...userWithoutPassword } = userData;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { contrasena: _, ...userWithoutPassword } = userData; // _, Excluye la contraseña del objeto de respuesta
       return res.status(200).json(userWithoutPassword);
 
     } catch (error: any) {
