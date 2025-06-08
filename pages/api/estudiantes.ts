@@ -38,6 +38,7 @@ export default async function handler(
     }
 
     // Mapea los datos para que coincidan con la interfaz StudentData esperada por el frontend
+    
     const students: StudentData[] = data.map((item: any) => ({
       id: item.id.toString(), // Asegúrate de que el ID sea un string si es lo que espera React
       nombre: item.usuario.nombre,

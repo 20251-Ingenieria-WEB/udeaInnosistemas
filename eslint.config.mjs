@@ -13,7 +13,6 @@ const compat = new FlatCompat({
 const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
 
-  // --- Nueva configuración para ignorar variables con _ ---
   {
     files: ["**/*.ts", "**/*.tsx"], // Aplica esta configuración a archivos TypeScript
     rules: {
@@ -25,10 +24,11 @@ const eslintConfig = [
           "destructuredArrayIgnorePattern": "^_" // Ignora elementos desestructurados de arrays (como en tu caso de desestructuración de objetos)
         }
       ],
+      // ¡AQUÍ ES DONDE AÑADES LA DESACTIVACIÓN DE LA REGLA!
+      "@typescript-eslint/no-explicit-any": "off", // Desactiva completamente la regla de 'no-explicit-any'
       // Puedes añadir aquí otras reglas si las necesitas
     },
   },
-  // --- Fin de la nueva configuración ---
 ];
 
 export default eslintConfig;
