@@ -1,9 +1,24 @@
 // DashboardSidebar.jsx
 "use client";
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import { NavigationButton } from "./NavigationButton";
-
 export function DashboardSidebar() {
+  const router = useRouter();
+  // 🚩 Función para manejar el cierre de sesión
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+
+      console.log("Sesión cerrada, redirigiendo a login...");
+      router.push("/login");
+    } catch (error) {
+      console.error("Error cerrando sesión:", error);
+    }
+  };
+
   return (
     <nav className="w-[322px] bg-slate-600 bg-opacity-80 border-r border-solid border-slate-600 border-opacity-20 flex flex-col pt-[100px] pb-4 fixed top-0 left-0 h-full max-md:w-[280px] max-sm:w-full max-sm:h-auto max-sm:relative max-sm:pt-4">
       <div className="p-4 flex flex-col gap-2">
@@ -33,11 +48,11 @@ export function DashboardSidebar() {
         />
 
         <NavigationButton
+          onClick={handleLogout}
           icon="salir.png"
-          label="salir"
-          href="/login"
+          label="salir"          
         />
-      </div>
+        </div>
     </nav>
   );
-}
+};

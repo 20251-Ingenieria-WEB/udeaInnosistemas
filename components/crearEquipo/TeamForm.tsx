@@ -2,7 +2,11 @@
 "use client";
 import * as React from "react";
 import { ErrorMessage } from "./ErrorMessage"; // Asegúrate de que esta ruta sea correcta
-
+// Importa useRouter de next/router para manejar la navegación
+import { useRouter } from 'next/router'
+// Asegúrate de que estás importando useRouter desde 'next/router' y no desde 'next/navigation'
+// Esto es necesario para redirigir al usuario después de crear el equipo
+  
 export function TeamForm() {
   const [teamName, setTeamName] = React.useState<string>(''); // Estado para el nombre del equipo
   const [leaderId, setLeaderId] = React.useState<string>(''); // Estado para el ID del estudiante líder seleccionado
@@ -11,7 +15,7 @@ export function TeamForm() {
   const [loading, setLoading] = React.useState<boolean>(false); // Estado para controlar el estado de carga del botón de envío
   const [fetchingStudents, setFetchingStudents] = React.useState<boolean>(true); // Estado para controlar el estado de carga de la lista de estudiantes
   const [studentsError, setStudentsError] = React.useState<string | null>(null); // Estado para errores al obtener estudiantes
-
+  const router = useRouter() // Inicializa useRouter para manejar la navegación
   // useEffect para cargar los estudiantes al montar el componente
   React.useEffect(() => {
     const fetchStudents = async () => {
@@ -99,7 +103,7 @@ export function TeamForm() {
       // Para evitar 'alert()', podrías usar un estado para mostrar un mensaje de éxito en la UI
       setError('Equipo creado exitosamente!'); // Reutilizamos el estado de error para mensajes de éxito temporalmente
                                                  // En una app real, usarías un estado dedicado o una biblioteca de notificaciones.
-
+      router.push('/equipoCreadoExitosamente'); // Redirige al usuario a la página de éxito
     } catch (err) {
       // Captura errores de red o problemas al parsear la respuesta
       console.error('Error de conexión o inesperado al crear equipo:', err);

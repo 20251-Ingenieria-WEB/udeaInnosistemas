@@ -6,11 +6,13 @@ import { MyTeamsPage } from "../../components/misEquipos/MyTeamsPage";
 
 function MyTeams() {
   return (
-    <div className="overflow-hidden bg-white">
+    <div className="bg-white">
       <Header />
-      <div className="flex"> {/* Use flexbox for main content and sidebar */}
+      <div className="flex pt-[88px]">
         <DashboardSidebar />
-        <MyTeamsPage /> {/* MyTeamsPage will take the remaining space */}
+        <div className="flex-1 min-h-screen">
+          <MyTeamsPage />
+        </div>
       </div>
     </div>
   );

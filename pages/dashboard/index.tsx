@@ -1,19 +1,54 @@
-// Tu archivo principal (por ejemplo, app/dashboard/page.jsx o pages/dashboard.jsx)
 "use client";
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import { Header } from "../../components/head/Header";
 import { DashboardSidebar } from "../../components/sidebar/DashboardSidebar";
 
 function DashboardDesktop() {
+  const router = useRouter();
+  const [loading, setLoading] = React.useState(true);
+  const [user, setUser] = React.useState(null);
+
+  React.useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch("/api/auth/verifyToken", {
+          method: "GET",
+          credentials: "include",
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          console.log("❌ No autenticado, redirigiendo a login...");
+          router.push("/login");
+          return;
+        }
+
+        console.log("✅ Usuario autenticado:", data);
+        setUser(data.user);
+      } catch (error) {
+        console.error("Error verificando autenticación:", error);
+        router.push("/login");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, [router]);
+
+  if (loading) return <p>Cargando...</p>;
+
+
   return (
-    // Elimina el w-[1512px] fijo del main.
-    // `min-h-screen` asegura que ocupe al menos toda la altura de la ventana.
-    // `w-full` lo hace ocupar el 100% del ancho disponible.
-    // `overflow-hidden` es una medida de seguridad para evitar scroll horizontal si algo se desborda mínimamente.
     <main className="relative bg-white min-h-screen w-full overflow-hidden">
       <Header />
       <DashboardSidebar />
+      
     </main>
+    
+    
   );
 }
 
