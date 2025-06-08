@@ -1,5 +1,5 @@
 // Este es el handler para la API de inicio de sesión
-// Asumo que este archivo está separado del handler POST de registro.
+// Asumo que este archivo está separado del handler POST de registro....
 // Si ambos están en el mismo archivo (ej. pages/api/auth/user.js),
 // entonces necesitarás una estructura if (req.method === 'POST') { ... } else if (req.method === 'GET') { ... }
 import { supabase } from '@/lib/supabase';
