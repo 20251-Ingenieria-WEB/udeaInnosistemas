@@ -14,6 +14,7 @@ export default async function handler(
   }
 
   const { nombre } = req.body;
+  const { equipo_lider_id } = req.body;
 
   if (typeof nombre !== 'string' || nombre.trim() === '') {
     return res.status(400).json({ error: 'El nombre del equipo es requerido y debe ser una cadena de texto válida.' });
@@ -30,7 +31,8 @@ export default async function handler(
       .from('equipo') // 'equipo' es el nombre de tu tabla en Supabase
       .insert({
         nombre: nombre,
-        fecha_creacion: now // Enviamos la fecha actual
+        fecha_creacion: now, // Enviamos la fecha actual
+        equipo_lider_id: equipo_lider_id // Asegúrate de que este campo sea correcto según tu esquema
       })
       .select(); // Esto devuelve el registro insertado
 

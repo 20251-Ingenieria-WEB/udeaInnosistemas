@@ -1,7 +1,33 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase"; // Import Supabase client
-import { TeamMemberRow } from "./TeamMemberRow"; // Assuming this component exists
+
+// Assuming this component exists or you can create a simple one
+// to display a member's name and role, and a delete button
+interface TeamMemberRowProps {
+  name: string;
+  role: string;
+  showDelete: boolean;
+  onDelete: () => void;
+}
+
+// A placeholder for TeamMemberRow if you don't have it
+// You'll need to style this appropriately if you use it.
+const TeamMemberRow: React.FC<TeamMemberRowProps> = ({ name, role, showDelete, onDelete }) => {
+  return (
+    <div className="flex justify-between items-center bg-gray-100 p-3 rounded-md">
+      <span>{name} - {role}</span>
+      {showDelete && (
+        <button
+          onClick={onDelete}
+          className="ml-4 text-red-500 hover:text-red-700 font-bold"
+        >
+          X
+        </button>
+      )}
+    </div>
+  );
+};
 
 interface TeamMember {
   id: string; // This will be the student's ID, converted to string
@@ -20,9 +46,16 @@ interface Student {
   matricula: string;
 }
 
-export const TeamForm = () => {
-  const [teams, setTeams] = useState<Team[]>([]);
-  const [selectedTeamId, setSelectedTeamId] = useState<number | null>(null);
+interface TeamFormProps {
+    teamIdToEdit: number | null; // The ID of the team to edit, or null for a new team
+    onCancel: () => void; // Callback when cancel button is clicked
+    onSave: () => void; // Callback when save button is clicked
+}
+
+
+export const TeamForm: React.FC<TeamFormProps> = ({ teamIdToEdit, onCancel, onSave }) => {
+  const [teams, setTeams] = useState<Team[]>([]); // This will hold all teams for the dropdown
+  const [selectedTeamId, setSelectedTeamId] = useState<number | null>(teamIdToEdit);
   const [selectedTeamName, setSelectedTeamName] = useState("Nombre del equipo");
   const [newMemberName, setNewMemberName] = useState("");
   const [members, setMembers] = useState<TeamMember[]>([]);
@@ -30,9 +63,9 @@ export const TeamForm = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Effect to fetch all teams on component mount
+  // Effect to fetch all teams on component mount or when teamIdToEdit changes
   useEffect(() => {
-    const fetchTeams = async () => {
+    const fetchAllTeams = async () => {
       setLoading(true);
       setError(null);
       try {
@@ -46,9 +79,21 @@ export const TeamForm = () => {
 
         if (data && data.length > 0) {
           setTeams(data);
-          // Set the first team as default if none is selected
-          setSelectedTeamId(data[0].id);
-          setSelectedTeamName(data[0].nombre);
+          // If editing a specific team, select it
+          if (teamIdToEdit !== null) {
+            const teamFound = data.find(t => t.id === teamIdToEdit);
+            if (teamFound) {
+                setSelectedTeamId(teamFound.id);
+                setSelectedTeamName(teamFound.nombre);
+            } else {
+                setError("Equipo no encontrado para editar.");
+                setSelectedTeamId(null);
+                setSelectedTeamName("Equipo no encontrado");
+            }
+          } else if (data.length > 0) { // Default to first team if not editing and teams exist
+            setSelectedTeamId(data[0].id);
+            setSelectedTeamName(data[0].nombre);
+          }
         } else {
           setTeams([]);
           setSelectedTeamId(null);
@@ -61,8 +106,8 @@ export const TeamForm = () => {
         setLoading(false);
       }
     };
-    fetchTeams();
-  }, []);
+    fetchAllTeams();
+  }, [teamIdToEdit]); // Re-run if teamIdToEdit changes
 
   // Effect to fetch team members and available students when selectedTeamId changes
   useEffect(() => {
@@ -153,15 +198,15 @@ export const TeamForm = () => {
         throw teamMembersError;
       }
 
-      const currentMemberIds = new Set(teamMembersData?.map((m) => m.estudiante_id));
+      const currentMemberIds = new Set(teamMembersData?.map((m) => m.estudiante_id));      
 
       // Filter for students not in the current team and who have valid usuario.nombre
       const available =
         allStudentsData
           ?.filter(
             (student: any) =>
-              student.usuario &&
-              student.usuario.nombre && // Ensure usuario and nombre exist
+              student.usuario && // Ensure student.usuario exists
+              typeof student.usuario.nombre === 'string' && // Ensure student.usuario.nombre exists and is a string
               !currentMemberIds.has(student.id)
           )
           .map((student: any) => ({
@@ -285,6 +330,7 @@ export const TeamForm = () => {
       members: members,
     });
     alert("Cambios guardados (operaciones de añadir/eliminar son instantáneas).");
+    onSave(); // Trigger the onSave callback to refresh parent component
   };
 
   const handleCancel = () => {
@@ -296,6 +342,7 @@ export const TeamForm = () => {
     }
     setNewMemberName(""); // Clear any pending new member input
     console.log("Cambios cancelados.");
+    onCancel(); // Trigger the onCancel callback to return to parent component
   };
 
   if (loading && teams.length === 0) {
@@ -325,7 +372,7 @@ export const TeamForm = () => {
             value={selectedTeamId || ""}
             onChange={handleTeamChange}
             className="w-full h-[58px] px-4 text-xl text-black border border-solid border-stone-300 rounded-md outline-none md:text-3xl max-sm:text-2xl bg-white"
-            disabled={loading}
+            disabled={loading} // Disable dropdown while loading
           >
             {teams.length === 0 ? (
               <option value="" disabled>
@@ -347,18 +394,19 @@ export const TeamForm = () => {
           Miembros
         </h3>
         <div className="flex flex-col space-y-3">
-          {members.length === 0 && selectedTeamId && !loading && (
+          {members.length === 0 && selectedTeamId && !loading ? (
             <p className="text-black text-opacity-70">No hay miembros en este equipo.</p>
+          ) : (
+            members.map((member) => (
+              <TeamMemberRow
+                key={member.id}
+                name={member.name}
+                role={member.role}
+                showDelete={true}
+                onDelete={() => handleDeleteMember(member.id)}
+              />
+            ))
           )}
-          {members.map((member) => (
-            <TeamMemberRow
-              key={member.id}
-              name={member.name}
-              role={member.role}
-              showDelete={true}
-              onDelete={() => handleDeleteMember(member.id)}
-            />
-          ))}
         </div>
       </section>
 

@@ -10,9 +10,8 @@ function ModifyTeamDesktop() {
       <DashboardSidebar />
       <div className="flex flex-col flex-grow">
         <Header />
-        <main className="flex-grow p-5 md:ml-[322px] mt-[88px] max-md:p-2.5">
-          
-          <TeamForm />
+        <main className="flex-grow p-5 md:ml-[322px] mt-[88px] max-md:p-2.5">          
+          <TeamForm />          
         </main>
       </div>
     </div>

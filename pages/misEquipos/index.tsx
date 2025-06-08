@@ -4,7 +4,7 @@ import { Header } from "../../components/head/Header";
 import { DashboardSidebar } from "../../components/sidebar/DashboardSidebar";
 import { MyTeamsPage } from "../../components/misEquipos/MyTeamsPage";
 
-function MyTeams3Desktop() {
+function MyTeams() {
   return (
     <div className="overflow-hidden bg-white">
       <Header />
@@ -16,4 +16,4 @@ function MyTeams3Desktop() {
   );
 }
 
-export default MyTeams3Desktop;
+export default MyTeams;
