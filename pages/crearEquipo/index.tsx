@@ -1,3 +1,4 @@
+//crearEquipo/index.tsx
 "use client";
 import * as React from "react";
 import { Header } from "../../components/head/Header";
