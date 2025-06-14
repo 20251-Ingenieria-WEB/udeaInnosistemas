@@ -2,24 +2,36 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { TeamCard } from "./TeamCard";
-import { supabase } from "@/lib/supabase";
-import { TeamForm } from "../../components/forms/TeamForm";
+import { TeamForm } from "../../components/forms/TeamForm"; // Assuming TeamForm also needs refactoring or uses its own API calls
 
 interface Team {
-  id: number;
+  id: string; // Changed to string to match GraphQL ID type
   nombre: string;
   fecha_creacion: string;
-  created_by_user_id: string;
+  equipo_lider_id: string; // Changed to string to match GraphQL ID type
   memberCount?: number;
-  createdByName?: string;
+  createdByName?: string; // This will now come from the 'usuario' relation if fetched
   createdAt: string;
+}
+
+interface MiembroEquipo {
+  estudiante_id: string;
+  equipos_id: string;
+  estudiante: {
+    id: string;
+    nombre: string;
+    matricula: string;
+    usuario: {
+      nombre: string;
+    };
+  };
 }
 
 export function MyTeamsPage() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedTeamIdForEdit, setSelectedTeamIdForEdit] = useState<number | null>(null);
+  const [selectedTeamIdForEdit, setSelectedTeamIdForEdit] = useState<string | null>(null); // Changed to string
   const [showDetailsModal, setShowDetailsModal] = useState<boolean>(false);
   const [selectedTeamForDetails, setSelectedTeamForDetails] = useState<Team | null>(null);
 
@@ -27,46 +39,65 @@ export function MyTeamsPage() {
     setLoading(true);
     setError(null);
     try {
-      const { data: teamsData, error: teamsError } = await supabase
-        .from("equipo")
-        .select("id, nombre, fecha_creacion");
+      const response = await fetch("/api/graphql", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query: `
+            query GetAllTeams {
+              equipos {
+                id
+                nombre
+                fecha_creacion
+                equipo_lider_id
+                miembros {
+                  estudiante_id
+                  estudiante {
+                    usuario {
+                      nombre
+                    }
+                  }
+                }
+              }
+            }
+          `,
+        }),
+      });
 
-      if (teamsError) throw teamsError;
+      const result = await response.json();
 
-      const teamsWithDetails = await Promise.all(
-        teamsData.map(async (team) => {
-          const { count: memberCount } = await supabase
-            .from("miembroequipo")
-            .select("*", { count: "exact", head: true })
-            .eq("equipos_id", team.id);
+      if (result.errors) {
+        throw new Error(result.errors[0].message);
+      }
 
-          let createdByName = "Desconocido";
-          if (team.nombre) {
-            const { data: userData } = await supabase
-              .from("usuario")
-              .select("nombre")
-              .eq("id", team.id)
-              .single();
+      const fetchedTeams: Team[] = result.data.equipos.map((team: any) => {
+        const memberCount = team.miembros ? team.miembros.length : 0;
+        
+        // This part needs adjustment if you want the 'createdByName' to be the leader's name.
+        // For simplicity, I'm setting it to 'Desconocido' as the current GraphQL schema
+        // doesn't directly expose the leader's name on the 'Equipo' type easily without another query.
+        // If you want the leader's name, you'd need to extend your GraphQL schema or
+        // make an additional call to fetch the user's name by equipo_lider_id.
+        const createdByName = "Desconocido"; 
 
-            if (userData) createdByName = userData.nombre;
-          }
+        const createdAt = new Date(team.fecha_creacion).toLocaleDateString("es-ES", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
 
-          const createdAt = new Date(team.fecha_creacion).toLocaleDateString("es-ES", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          });
+        return {
+          ...team,
+          id: team.id.toString(), // Ensure ID is string
+          memberCount,
+          createdByName,
+          createdAt,
+        };
+      });
 
-          return {
-            ...team,
-            memberCount: memberCount || 0,
-            createdByName,
-            createdAt,
-          } as Team;
-        })
-      );
-
-      setTeams(teamsWithDetails);
+      setTeams(fetchedTeams);
     } catch (err: any) {
       console.error("Error fetching teams data:", err.message);
       setError(`Error al cargar los equipos: ${err.message}`);
@@ -79,21 +110,14 @@ export function MyTeamsPage() {
     fetchTeamsData();
   }, []);
 
-  const handleViewDetails = (teamId: number) => {
-    const team = teams.find((t) => t.id === teamId);
-    if (team) {
-      setSelectedTeamForDetails(team);
-      setShowDetailsModal(true);
-    }
-  };
 
-  const handleModifyTeam = (teamId: number) => {
+  const handleModifyTeam = (teamId: string) => { 
     setSelectedTeamIdForEdit(teamId);
   };
 
   const handleCloseEdit = () => {
     setSelectedTeamIdForEdit(null);
-    fetchTeamsData();
+    fetchTeamsData(); // Re-fetch teams after closing edit form to update the list
   };
 
   if (loading) {
@@ -116,7 +140,8 @@ export function MyTeamsPage() {
     return (
       <main className="flex-1 p-5 overflow-auto h-screen ml-[322px] mt-[88px]">
         <h2 className="text-3xl font-bold text-black mb-6">Modificar Equipo</h2>
-        <TeamForm teamIdToEdit={selectedTeamIdForEdit} onCancel={handleCloseEdit} onSave={handleCloseEdit} />
+        {/* Pass the teamIdToEdit to TeamForm so it can fetch the specific team for editing */}
+        <TeamForm teamIdToEdit={selectedTeamIdForEdit !== null ? Number(selectedTeamIdForEdit) : null} onCancel={handleCloseEdit} onSave={handleCloseEdit} />
       </main>
     );
   }
@@ -127,7 +152,7 @@ export function MyTeamsPage() {
         <header className="flex flex-wrap gap-5 justify-between font-medium">
           <h2 className="text-3xl font-bold text-black mb-6">Mis Equipos</h2>
         </header>
-        
+
         <div className="grid gap-6">
           {teams.length === 0 ? (
             <p className="text-black text-opacity-70">No hay equipos disponibles para mostrar.</p>
@@ -135,9 +160,9 @@ export function MyTeamsPage() {
             teams.map((team) => (
               <TeamCard
                 key={team.id}
-                team={{ ...team, memberCount: team.memberCount ?? 0, createdByName: team.createdByName ?? "Desconocido" }}
-                onView={handleViewDetails}
-                onModify={handleModifyTeam}
+                team={{ ...team, id: Number(team.id), memberCount: team.memberCount ?? 0, createdByName: team.createdByName ?? "Desconocido" }}
+                onView={() => {}} // Provide a no-op function or implement as needed
+                onModify={(teamId: number) => handleModifyTeam(teamId.toString())}
               />
             ))
           )}

@@ -1,6 +1,6 @@
+//signUp/index.tsx
 import { SignUpForm } from '@/components/auth/SignUpForm';
 import { CompanyHeader } from "../../components/signUp/CompanyHeader";
-//import Head from 'next/head';
 
 export default function Registro() {
   return (

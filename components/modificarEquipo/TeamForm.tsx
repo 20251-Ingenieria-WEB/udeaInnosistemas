@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase"; // Import Supabase client
 import { TeamMemberRow } from "./TeamMemberRow"; // Assuming this component exists
 
 interface TeamMember {
@@ -30,25 +29,44 @@ export const TeamForm = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const GRAPHQL_ENDPOINT = '/api/graphql'; // Your GraphQL endpoint
+
   // Effect to fetch all teams on component mount
   useEffect(() => {
     const fetchTeams = async () => {
       setLoading(true);
       setError(null);
       try {
-        const { data, error: fetchError } = await supabase
-          .from("equipo")
-          .select("id, nombre");
+        const response = await fetch(GRAPHQL_ENDPOINT, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            query: `
+              query {
+                equipos {
+                  id
+                  nombre
+                }
+              }
+            `,
+          }),
+        });
 
-        if (fetchError) {
-          throw fetchError;
+        const result = await response.json();
+
+        if (result.errors) {
+          throw new Error(result.errors[0].message);
         }
 
-        if (data && data.length > 0) {
-          setTeams(data);
+        const fetchedTeams: Team[] = result.data.equipos;
+
+        if (fetchedTeams && fetchedTeams.length > 0) {
+          setTeams(fetchedTeams);
           // Set the first team as default if none is selected
-          setSelectedTeamId(data[0].id);
-          setSelectedTeamName(data[0].nombre);
+          setSelectedTeamId(fetchedTeams[0].id);
+          setSelectedTeamName(fetchedTeams[0].nombre);
         } else {
           setTeams([]);
           setSelectedTeamId(null);
@@ -79,37 +97,43 @@ export const TeamForm = () => {
     setLoading(true);
     setError(null);
     try {
-      const { data, error: fetchError } = await supabase
-        .from("miembroequipo")
-        .select(
-          `
-          estudiante_id,
-          estudiante (
-            id,
-            usuario (
-              nombre
-            )
-          )
-          `
-        )
-        .eq("equipos_id", teamId);
+      const response = await fetch(GRAPHQL_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: `
+            query GetTeamMembers($teamId: ID!) {
+              miembroequipo(equipos_id: $teamId) {
+                estudiante_id
+                estudiante {
+                  id
+                  nombre
+                }
+              }
+            }
+          `,
+          variables: { teamId: teamId.toString() },
+        }),
+      });
 
-      if (fetchError) {
-        throw fetchError;
+      const result = await response.json();
+
+      if (result.errors) {
+        throw new Error(result.errors[0].message);
       }
 
-      // Filter out records where nested relations are null/undefined
       const fetchedMembers: TeamMember[] =
-        data
+        result.data.miembroequipo
           ?.filter(
             (member: any) =>
               member.estudiante &&
-              member.estudiante.usuario &&
-              member.estudiante.usuario.nombre
+              member.estudiante.nombre
           )
           .map((member: any) => ({
             id: member.estudiante_id.toString(),
-            name: member.estudiante.usuario.nombre,
+            name: member.estudiante.nombre,
             role: "Miembro", // Default role
           })) || [];
       setMembers(fetchedMembers);
@@ -126,47 +150,67 @@ export const TeamForm = () => {
     setLoading(true);
     setError(null);
     try {
-      // Fetch all students with their associated user names
-      const { data: allStudentsData, error: allStudentsError } = await supabase
-        .from("estudiante")
-        .select(
-          `
-          id,
-          usuario (
-            nombre
-          ),
-          matricula
-          `
-        );
+      const allStudentsResponse = await fetch(GRAPHQL_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: `
+            query {
+              estudiantes {
+                id
+                nombre
+                matricula
+              }
+            }
+          `,
+        }),
+      });
 
-      if (allStudentsError) {
-        throw allStudentsError;
+      const allStudentsResult = await allStudentsResponse.json();
+
+      if (allStudentsResult.errors) {
+        throw new Error(allStudentsResult.errors[0].message);
       }
 
-      // Fetch IDs of students already in the current team
-      const { data: teamMembersData, error: teamMembersError } = await supabase
-        .from("miembroequipo")
-        .select("estudiante_id")
-        .eq("equipos_id", teamId);
+      const allStudents: Student[] = allStudentsResult.data.estudiantes;
 
-      if (teamMembersError) {
-        throw teamMembersError;
+      const teamMembersResponse = await fetch(GRAPHQL_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: `
+            query GetTeamMembersIds($teamId: ID!) {
+              miembroequipo(equipos_id: $teamId) {
+                estudiante_id
+              }
+            }
+          `,
+          variables: { teamId: teamId.toString() },
+        }),
+      });
+
+      const teamMembersResult = await teamMembersResponse.json();
+
+      if (teamMembersResult.errors) {
+        throw new Error(teamMembersResult.errors[0].message);
       }
 
-      const currentMemberIds = new Set(teamMembersData?.map((m) => m.estudiante_id));
+      const currentMemberIds = new Set(teamMembersResult.data.miembroequipo?.map((m: any) => parseInt(m.estudiante_id)));
 
-      // Filter for students not in the current team and who have valid usuario.nombre
       const available =
-        allStudentsData
+        allStudents
           ?.filter(
             (student: any) =>
-              student.usuario &&
-              student.usuario.nombre && // Ensure usuario and nombre exist
-              !currentMemberIds.has(student.id)
+              student.nombre && // Ensure nombre exists
+              !currentMemberIds.has(parseInt(student.id))
           )
           .map((student: any) => ({
-            id: student.id,
-            nombre: student.usuario.nombre,
+            id: parseInt(student.id),
+            nombre: student.nombre,
             matricula: student.matricula,
           })) || [];
       setAvailableStudents(available);
@@ -212,15 +256,30 @@ export const TeamForm = () => {
     setLoading(true);
     setError(null);
     try {
-      const { error: insertError } = await supabase.from("miembroequipo").insert([
-        {
-          equipos_id: selectedTeamId, // Changed to equipos_id to match fetchTeamMembers
-          estudiante_id: studentToAdd.id,
+      const response = await fetch(GRAPHQL_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      ]);
+        body: JSON.stringify({
+          query: `
+            mutation CreateMiembroEquipo($equipos_id: ID!, $estudiante_id: ID!) {
+              createMiembroEquipo(equipos_id: $equipos_id, estudiante_id: $estudiante_id) {
+                estudiante_id
+              }
+            }
+          `,
+          variables: {
+            equipos_id: selectedTeamId.toString(),
+            estudiante_id: studentToAdd.id.toString(),
+          },
+        }),
+      });
 
-      if (insertError) {
-        throw insertError;
+      const result = await response.json();
+
+      if (result.errors) {
+        throw new Error(result.errors[0].message);
       }
 
       setNewMemberName(""); // Clear input after adding
@@ -250,19 +309,31 @@ export const TeamForm = () => {
       return; // User cancelled the deletion
     }
 
-    const studentId = parseInt(studentIdString); // Convert back to number for DB operation
-
     setLoading(true);
     setError(null);
     try {
-      const { error: deleteError } = await supabase
-        .from("miembroequipo")
-        .delete()
-        .eq("equipos_id", selectedTeamId)
-        .eq("estudiante_id", studentId);
+      const response = await fetch(GRAPHQL_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: `
+            mutation DeleteMiembroEquipo($equipos_id: ID!, $estudiante_id: ID!) {
+              deleteMiembroEquipo(equipos_id: $equipos_id, estudiante_id: $estudiante_id)
+            }
+          `,
+          variables: {
+            equipos_id: selectedTeamId.toString(),
+            estudiante_id: studentIdString,
+          },
+        }),
+      });
 
-      if (deleteError) {
-        throw deleteError;
+      const result = await response.json();
+
+      if (result.errors) {
+        throw new Error(result.errors[0].message);
       }
 
       // Re-fetch members and available students to update UI
@@ -277,6 +348,10 @@ export const TeamForm = () => {
   };
 
   const handleSave = () => {
+    if (members.length < 2) {
+      alert("Un equipo debe tener al menos 2 miembros.");
+      return;
+    }
     // For this implementation, member additions/deletions are direct DB operations.
     // This button could be used for other form-wide saves if applicable (e.g., team name change).
     // For now, it just logs.
@@ -383,7 +458,7 @@ export const TeamForm = () => {
           type="button"
           onClick={handleAddMember}
           className="bg-transparent border border-solid border-slate-400 rounded h-[58px] px-6 text-xl font-medium text-black text-opacity-50 md:w-[121px] max-sm:text-xl
-                       disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={!selectedTeamId || members.length >= 3 || !newMemberName.trim() || loading}
         >
           Añadir
@@ -395,8 +470,8 @@ export const TeamForm = () => {
           type="button"
           onClick={handleSave}
           className="bg-slate-400 bg-opacity-70 rounded-md h-[62px] px-6 text-xl font-medium text-white md:w-[268px] max-sm:text-2xl
-                       disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled={loading}
+                        disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={loading || members.length < 2} // Disable if less than 2 members
         >
           Guardar cambios
         </button>
@@ -404,7 +479,7 @@ export const TeamForm = () => {
           type="button"
           onClick={handleCancel}
           className="bg-transparent border border-solid border-slate-400 rounded-md h-[62px] px-6 text-xl font-medium text-black md:w-[172px] max-sm:text-2xl
-                       disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={loading}
         >
           Cancelar

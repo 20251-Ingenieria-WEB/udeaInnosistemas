@@ -1,3 +1,4 @@
+//login/index.tsx
 "use client";
 import * as React from "react";
 import { useRouter } from "next/navigation";
@@ -7,17 +8,26 @@ import { PasswordInput } from "../../components/login/PasswordInput";
 import { LoginButton } from "../../components/login/LoginButton";
 import { RegistrationPrompt } from "../../components/login/RegistrationPrompt";
 
-interface AuthSuccessResponse {
-  nombre: string;
-  email: string;
-  id?: string;
+// Definimos el tipo de respuesta para la mutación GraphQL
+interface AuthSuccessGraphQLResponse {
+  data: {
+    login: { // El nombre del campo de la mutación en el esquema GraphQL
+      nombre: string;
+      email: string;
+      id?: string;
+    };
+  };
 }
 
-interface AuthErrorResponse {
-  error: string;
+interface AuthErrorGraphQLResponse {
+  errors: Array<{
+    message: string;
+    extensions?: any;
+    path?: string[];
+  }>;
 }
 
-type ApiResponse = AuthSuccessResponse | AuthErrorResponse;
+type GraphQLResponse = AuthSuccessGraphQLResponse | AuthErrorGraphQLResponse;
 
 function LoginFormDesktop() {
   const [email, setEmail] = React.useState<string>("");
@@ -31,25 +41,54 @@ function LoginFormDesktop() {
     setLoading(true);
     setError(null);
 
+    // Definición de la mutación GraphQL
+    const LOGIN_MUTATION = `
+      mutation Login($email: String!, $contrasena: String!) {
+        login(email: $email, contrasena: $contrasena) {
+          id
+          nombre
+          email
+        }
+      }
+    `;
+
     try {
-      const response = await fetch("/api/auth/users", {
+      const response = await fetch("/api/graphql", { // Asume que tu endpoint GraphQL está en /api/graphql
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, contrasena }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query: LOGIN_MUTATION,
+          variables: { email, contrasena },
+        }),
       });
 
-      const data: ApiResponse = await response.json();
+      const data: GraphQLResponse = await response.json();
 
+      // Manejo de errores de red o HTTP (por ejemplo, si el servidor GraphQL no responde)
       if (!response.ok) {
-        setError("Error al iniciar sesión.");
+        setError("Error de conexión con el servidor.");
         return;
       }
 
-      console.log("Autenticación exitosa:", data);
-      router.push("/dashboard"); 
+      // Manejo de errores de GraphQL (si la mutación falla lógicamente)
+      if ('errors' in data && data.errors && data.errors.length > 0) {
+        setError(data.errors[0].message || "Error al iniciar sesión.");
+        return;
+      }
+
+      // Si todo sale bien, la respuesta debe contener 'data' y 'login'
+      if ('data' in data && data.data && data.data.login) {
+        console.log("Autenticación exitosa:", data.data.login);
+        router.push("/dashboard");
+      } else {
+        // En caso de una estructura de respuesta inesperada
+        setError("Respuesta inesperada del servidor.");
+      }
 
     } catch (err) {
-      console.error("Error en la API:", err);
+      console.error("Error en la solicitud GraphQL:", err);
       setError("Error de conexión.");
     } finally {
       setLoading(false);

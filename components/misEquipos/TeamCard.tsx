@@ -1,3 +1,4 @@
+//misEquipos/TeamCard.tsx
 "use client";
 import * as React from "react";
 
@@ -35,13 +36,8 @@ export function TeamCard({ team, onView, onModify }: TeamCardProps) {
         </div>
       </div>
       
-      <div className="flex gap-3 self-center md:self-auto">
-        <button
-          className="px-6 py-3 rounded border border-solid border-slate-400 hover:bg-slate-100 transition-colors"
-          onClick={() => onView(team.id)}
-        >
-          Ver
-        </button>
+      <div className="flex gap-3 self-center md:self-auto">        
+        
         <button
           className="px-6 py-3 rounded border border-solid border-slate-400 hover:bg-slate-100 transition-colors"
           onClick={() => onModify(team.id)}

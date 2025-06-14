@@ -9,12 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@apollo/client": "^3.13.8",
     "@supabase/supabase-js": "^2.49.10",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/react-router-dom": "^5.3.3",
     "@vercel/remix-builder": "^5.2.3",
     "bcryptjs": "^3.0.2",
     "cookie": "^1.0.2",
+    "graphql": "^16.11.0",
+    "graphql-yoga": "^5.13.5",
     "jsonwebtoken": "^9.0.2",
     "next": "15.3.2",
     "path-to-regexp": "^8.2.0",
